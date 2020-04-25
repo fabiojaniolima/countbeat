@@ -1,116 +1,65 @@
-# {Beat}
+# Countbeat
 
-Welcome to {Beat}.
+Este Beat foi desenvolvido considerando a necessidade de quantificar o total de arquivos dado um diretório no sistema operacional. No estado atual o Beat irá quantificar o total de arquivos considerando para tanto a máscara (match) passado por meio da definição do campo `path` no arquivo `countbeat.yml`.
 
-Ensure that this folder is at the following location:
-`${GOPATH}/src/github.com/fabiojaniolima/countbeat`
+> As palavras-chave "DEVE", "NÃO DEVE", "REQUER", "DEVERIA", "NÃO DEVERIA", "PODERIA", "NÃO PODERIA", "RECOMENDÁVEL", "PODE", e "OPCIONAL" neste documento devem ser interpretadas como descritas no [RFC 2119](http://tools.ietf.org/html/rfc2119). Tradução livre [RFC 2119 pt-br](http://rfc.pt.webiwg.org/rfc2119).
 
-## Getting Started with {Beat}
+Versão: baseado no [elastic/beats v7.7](https://github.com/elastic/beats/tree/7.7)
 
-### Requirements
+## Considerações
 
-* [Golang](https://golang.org/dl/) 1.7
+- Você PODE realizar o download dos binários para seu respectivo sistema operacional ou realizar sua própria compilação.
 
-### Init Project
-To get running with {Beat} and also install the
-dependencies, run the following command:
+### Pacote pré-compilado
+
+Realize o download do arquivo `*bin.zip` referente ao seu sistema operacional em: https://github.com/fabiojaniolima/countbeat/releases
+
+### Realizar compilação
+
+Pré-requisitos:
+- `go 1.13.10`
+- `git`
+- `Python 3.7 ou superior`
+- `python virtualenv`
+
+> É importante que as variáveis `GOROOT` e `GOPATH` estejam corretamente definidas, bem como o mapeamento do subdiretório `bin`. Para facilitar a vida considere utilizar o [GVM]( https://github.com/moovweb/gvm) se possível.
+
+Caso não tenha o "Mage" instalado, você DEVE realizar a instalação do mesmo:
+```
+go get github.com/magefile/mage
+```
+> Caso esteja utilizando o GVM o binário será automaticamente incluído na sua variável PATH. Do contrário registre o binário manualmente.
 
 ```
-make setup
+mkdir -p $GOPATH/src/github.com/fabiojaniolima
+git clone https://github.com/fabiojaniolima/countbeat.git $GOPATH/src/github.com/fabiojaniolima/countbeat
 ```
 
-It will create a clean git history for each major step. Note that you can always rewrite the history if you wish before pushing your changes.
-
-To push {Beat} in the git repository, run the following commands:
-
+Baixe as dependências:
 ```
-git remote set-url origin https://github.com/fabiojaniolima/countbeat
-git push origin master
+mage vendorUpdate
 ```
 
-For further development, check out the [beat developer guide](https://www.elastic.co/guide/en/beats/libbeat/current/new-beat.html).
-
-### Build
-
-To build the binary for {Beat} run the command below. This will generate a binary
-in the same directory with the name countbeat.
-
+Uma das formas de realizar a compilação é executar:
 ```
-make
+go build -o countbeat main.go
 ```
 
+> É RECOMENDÁVEL executar `mage update` e `mage fmt` sempre que alterar arquivos nos diretórios: `_meta` e `config`.
 
-### Run
-
-To run {Beat} with debugging output enabled, run:
-
+Para realizar uma compilação cruzada, ou seja, para outro sistema ou arquitetura considere utilizar:
 ```
-./countbeat -c countbeat.yml -e -d "*"
+env GOOS=windows GOARCH=amd64 go build -o countbeat.exe main.go
 ```
 
+## Utilizando
 
-### Test
+O Countbeat possui um funcionamento similar a qualquer outro Beat que faz parte da Stack ELK. Basicamente você configura o arquivo `countbeat.yml` e chama o binário de nome `countbeat` que foi baixado ou compilado.
 
-To test {Beat}, run the following command:
+A contagem dos arquivos será armazenada no campo `counter`, este valor será enviado para o output definido no arquivo de configuração, ou seja, segue o comportamento padrão de qualquer Beat da família.
 
-```
-make testsuite
-```
+## Referências
 
-alternatively:
-```
-make unit-tests
-make system-tests
-make integration-tests
-make coverage-report
-```
-
-The test coverage is reported in the folder `./build/coverage/`
-
-### Update
-
-Each beat has a template for the mapping in elasticsearch and a documentation for the fields
-which is automatically generated based on `fields.yml` by running the following command.
-
-```
-make update
-```
-
-
-### Cleanup
-
-To clean  {Beat} source code, run the following command:
-
-```
-make fmt
-```
-
-To clean up the build directory and generated artifacts, run:
-
-```
-make clean
-```
-
-
-### Clone
-
-To clone {Beat} from the git repository, run the following commands:
-
-```
-mkdir -p ${GOPATH}/src/github.com/fabiojaniolima/countbeat
-git clone https://github.com/fabiojaniolima/countbeat ${GOPATH}/src/github.com/fabiojaniolima/countbeat
-```
-
-
-For further development, check out the [beat developer guide](https://www.elastic.co/guide/en/beats/libbeat/current/new-beat.html).
-
-
-## Packaging
-
-The beat frameworks provides tools to crosscompile and package your beat for different platforms. This requires [docker](https://www.docker.com/) and vendoring as described above. To build packages of your beat, run the following command:
-
-```
-make release
-```
-
-This will fetch and create all images required for the build process. The whole process to finish can take several minutes.
+Alguns links relevantes:
+- https://www.elastic.co/guide/en/beats/devguide/current/new-beat.html
+- https://www.elastic.co/guide/en/beats/devguide/current/beater-interface.html
