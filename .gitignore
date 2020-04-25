@@ -3,5 +3,7 @@
 
 .DS_Store
 /countbeat
+/countbeat.exe
 /countbeat.test
+/vendor
 *.pyc
