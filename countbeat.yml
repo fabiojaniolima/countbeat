@@ -4,7 +4,9 @@
 
 countbeat:
   # Defines how often an event is sent to the output
-  period: 1s
+  period: 1m
+  path: /var/log/*.log #C:\programdata\elasticsearch\logs\*
+  count_directories: false
 
 #================================ General =====================================
 
